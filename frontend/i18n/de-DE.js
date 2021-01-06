@@ -3,7 +3,7 @@ export default {
     title: 'AirPoll App'
   },
   common: {
-    home: 'Code.Now'
+    home: '<Code.Now!>'
   },
   footer: {
     title: 'Accenture Code.Now Challenge'
@@ -16,6 +16,13 @@ export default {
       link: 'Zurück zum Start',
       'other error': 'Ein Fehler ist aufgetreten!',
       'page not found': 'Seite nicht gefunden!'
+    },
+    index: {
+      card: {
+        btn: 'Gehe zur Quelle',
+        text:
+          'Frontend der AirPoll App realisiert mit Vue.js, Nuxt.js und Vuetify.'
+      }
     }
   },
   settings: {
