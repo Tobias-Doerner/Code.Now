@@ -1,9 +1,5 @@
-import { mount } from '@vue/test-utils'
-import Logo from '@/components/Logo.vue'
-
-describe('Logo', () => {
-  test('is a Vue instance', () => {
-    const wrapper = mount(Logo)
-    expect(wrapper.vm).toBeTruthy()
+describe('Dummy Test', () => {
+  test('just there to prevent jest framework for throwing an error', () => {
+    expect(true).toBeTruthy()
   })
 })

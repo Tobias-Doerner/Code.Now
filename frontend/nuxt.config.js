@@ -1,4 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
+import de from 'vuetify/es5/locale/de'
+import en from 'vuetify/es5/locale/en'
+import pkg from './package'
 
 export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -6,21 +9,23 @@ export default {
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    titleTemplate: '%s - air-poll-app',
-    title: 'air-poll-app',
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { name: 'author', content: pkg.author },
+      { name: 'description', content: pkg.description, hid: 'description' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    noscript: [{ innerHTML: 'This website requires JavaScript!' }],
+    title: pkg.name,
+    titleTemplate: 'AirPoll App'
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
-  css: [],
+  css: ['~/assets/css/main.css'],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [],
+  plugins: ['~/plugins/vuetify.js'],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -30,39 +35,107 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    ['@nuxtjs/vuetify', { defaultAssets: false }],
+    '@nuxtjs/moment'
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
+    '@nuxtjs/moment',
+    '@nuxtjs/proxy',
+    '@nuxtjs/universal-storage',
+    'nuxt-i18n'
   ],
 
+  router: {
+    middleware: ['theme']
+  },
+
+  publicRuntimeConfig: {
+    version: pkg.version
+  },
+
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    proxy: true
+  },
+
+  /*
+   ** nuxt-i18n module configuration
+   *  See https://nuxt-community.github.io/nuxt-i18n/
+   */
+  i18n: {
+    defaultLocale: 'en',
+    detectBrowserLanguage: {
+      cookieKey: 'i18n_redirected',
+      onlyOnRoot: true,
+      useCookie: true
+    },
+    langDir: 'i18n/',
+    lazy: true,
+    locales: [
+      { code: 'de', iso: 'de-DE', file: 'de-DE.js', name: 'deutsch' },
+      { code: 'en', iso: 'en-US', file: 'en-US.js', name: 'english' }
+    ],
+    strategy: 'no_prefix',
+    vuex: {
+      moduleName: 'i18n',
+      syncLocale: true,
+      syncMessages: false,
+      syncRouteParams: false
+    }
+  },
+
+  moment: {
+    locales: ['de']
+  },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    lang: {
+      locales: { de, en },
+      current: 'de'
+    },
     theme: {
-      dark: true,
+      options: {
+        customProperties: true
+      },
+      dark: false,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
+          accent: colors.orange.darken1,
+          heading: colors.blueGrey.darken4,
+          error: colors.red.base,
+          footing: colors.blueGrey.darken4,
+          info: colors.lightGreen.base,
+          menus: colors.blueGrey.darken3,
+          primary: colors.blue.lighten2,
+          secondary: colors.blueGrey.base,
+          success: colors.green.base,
+          tertiary: '#323232',
+          warning: colors.amber.base
         },
-      },
+        light: {
+          accent: colors.orange.darken4,
+          heading: colors.blueGrey.darken1,
+          error: colors.red.base,
+          footing: colors.blueGrey.darken1,
+          info: colors.lightGreen.base,
+          menus: colors.blueGrey.lighten4,
+          primary: colors.blue.darken2,
+          secondary: colors.blueGrey.base,
+          success: colors.green.base,
+          tertiary: colors.grey.lighten4,
+          warning: colors.amber.base
+        }
+      }
     },
+    treeShake: true
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  build: {}
 }
