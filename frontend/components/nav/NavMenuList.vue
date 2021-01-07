@@ -30,6 +30,12 @@ export default {
           id: '1',
           route: '/',
           text: this.$t('common.home')
+        },
+        {
+          icon: 'mdi-table-large',
+          id: '2',
+          route: '/measurements',
+          text: this.$t('common.air_pollution')
         }
       ]
     }

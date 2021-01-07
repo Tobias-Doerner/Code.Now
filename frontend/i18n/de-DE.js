@@ -3,6 +3,7 @@ export default {
     title: 'AirPoll App'
   },
   common: {
+    air_pollution: 'Luftverschmutzung',
     home: '<Code.Now!>'
   },
   footer: {
