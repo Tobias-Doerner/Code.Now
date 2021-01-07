@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index snapshot test 1`] = `
+<div
+  class="container container--fluid"
+>
+  <div
+    class="row justify-center"
+  >
+    <div
+      class="mx-auto v-card v-sheet theme--light tertiary"
+    >
+      <div
+        class="v-image v-responsive theme--light"
+        style="max-width: 700px;"
+      >
+        <transition-stub
+          mode="in-out"
+          name="fade-transition"
+        >
+          <div
+            class="v-image__image v-image__image--preload v-image__image--cover"
+            style="background-position: center center;"
+          />
+        </transition-stub>
+        <div
+          class="v-responsive__content"
+        />
+      </div>
+       
+      <div
+        class="v-card__text body-1"
+      >
+        
+        Frontend der AirPoll App realisiert mit Vue.js, Nuxt.js und Vuetify.
+      
+      </div>
+       
+      <div
+        class="v-card__actions"
+      >
+        <a
+          class="v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default primary"
+          href="https://github.com/Tobias-Doerner/Code.Now"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <span
+            class="v-btn__content"
+          >
+            
+          Gehe zur Quelle
+        
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
