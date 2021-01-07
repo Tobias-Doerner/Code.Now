@@ -46,7 +46,7 @@ export default {
     '@nuxtjs/moment',
     '@nuxtjs/proxy',
     '@nuxtjs/universal-storage',
-    'nuxt-i18n'
+    ['nuxt-i18n', { seo: true }]
   ],
 
   proxy: {
