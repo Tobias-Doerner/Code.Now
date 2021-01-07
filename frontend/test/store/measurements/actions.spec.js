@@ -2,11 +2,9 @@ import actions from '@/store/measurements/actions'
 
 describe('VUEX actions of the measurements module', () => {
   const commit = jest.fn()
-  console.error = jest.fn()
 
   beforeEach(() => {
     commit.mockClear()
-    console.error.mockClear()
   })
 
   describe('Action GET_CITIES', () => {
@@ -111,10 +109,11 @@ describe('VUEX actions of the measurements module', () => {
         }
       }
 
-      await actions.GET_CITIES({ commit })
+      await actions
+        .GET_CITIES({ commit })
+        .catch((err) => expect(err).toBeDefined())
 
       expect(commit).toHaveBeenCalledTimes(0)
-      expect(console.error).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -220,10 +219,11 @@ describe('VUEX actions of the measurements module', () => {
         }
       }
 
-      await actions.GET_COUNTRIES({ commit })
+      await actions
+        .GET_COUNTRIES({ commit })
+        .catch((err) => expect(err).toBeDefined())
 
       expect(commit).toHaveBeenCalledTimes(0)
-      expect(console.error).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -365,7 +365,7 @@ describe('VUEX actions of the measurements module', () => {
           expect(url).toBe(
             '/api.openaq.org/v1/measurements?page=1&country=CH&city=Aargau&order_by[]=country&order_by[]=city&sort[]=desc&sort[]=asc'
           )
-          return Promise.reject(new Error('Network Error'))
+          return Promise.resolve({ status: 204 })
         }
       }
 
@@ -381,7 +381,6 @@ describe('VUEX actions of the measurements module', () => {
       )
 
       expect(commit).toHaveBeenCalledTimes(0)
-      expect(console.error).toHaveBeenCalledTimes(1)
     })
 
     it('should handle response with empty result when calling API', async () => {
@@ -416,10 +415,11 @@ describe('VUEX actions of the measurements module', () => {
         }
       }
 
-      await actions.GET_MEASUREMENTS({ commit }, { page: 1 })
+      await actions
+        .GET_MEASUREMENTS({ commit }, { page: 1 })
+        .catch((err) => expect(err).toBeDefined())
 
       expect(commit).toHaveBeenCalledTimes(0)
-      expect(console.error).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -568,10 +568,11 @@ describe('VUEX actions of the measurements module', () => {
         }
       }
 
-      await actions.GET_PARAMETERS({ commit })
+      await actions
+        .GET_PARAMETERS({ commit })
+        .catch((err) => expect(err).toBeDefined())
 
       expect(commit).toHaveBeenCalledTimes(0)
-      expect(console.error).toHaveBeenCalledTimes(1)
     })
   })
 })

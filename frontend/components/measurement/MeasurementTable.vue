@@ -1,58 +1,81 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="items"
-    class="tertiary"
-    dense
-    disable-pagination
-    hide-default-footer
-    multi-sort
-    @update:options="setSorting"
-  >
-    <template v-slot:top>
-      <v-toolbar color="accent" dense flat>
-        <v-toolbar-title
-          class="flex-grow-1 flex-shrink-0 title pl-0 white--text"
-        >
-          {{ $t('measurement.table.title') }}
-        </v-toolbar-title>
-      </v-toolbar>
-      <slot name="filter"></slot>
-    </template>
+  <div>
+    <v-snackbar v-model="snackbar" color="error">
+      <template v-slot:action="{ attrs }">
+        {{ $t('common.error.network_error') }}
+        <v-btn class="ma-2" v-bind="attrs" icon @click="snackbar = false">
+          <v-icon>mdi-close-circle</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 
-    <template v-slot:item.parameter="{ item }">
-      <v-tooltip top>
-        <template v-slot:activator="{ on, attrs }">
-          <v-chip
-            class="text-center d-flex align-center justify-space-around"
-            color="secondary"
-            small
-            v-bind="attrs"
-            v-on="on"
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      class="tertiary"
+      dense
+      disable-pagination
+      hide-default-footer
+      multi-sort
+      @update:options="setSorting"
+    >
+      <template v-slot:top>
+        <v-toolbar color="accent" dense flat>
+          <v-toolbar-title
+            class="flex-grow-1 flex-shrink-0 title pl-0 white--text"
           >
-            <strong>{{ getParameter(item.parameter).name }}</strong>
-          </v-chip>
-        </template>
-        <span>{{ getParameter(item.parameter).description }}</span>
-      </v-tooltip>
-    </template>
+            {{ $t('measurement.table.title') }}
+          </v-toolbar-title>
+        </v-toolbar>
+        <slot name="filter"></slot>
+      </template>
 
-    <template v-slot:item.value="{ item }">
-      {{ item.value | formatDecimal }}
-    </template>
+      <template v-slot:item.parameter="{ item }">
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-chip
+              class="text-center d-flex align-center justify-space-around"
+              color="secondary"
+              small
+              v-bind="attrs"
+              v-on="on"
+            >
+              <strong>{{ getParameter(item.parameter).name }}</strong>
+            </v-chip>
+          </template>
+          <span>{{ getParameter(item.parameter).description }}</span>
+        </v-tooltip>
+      </template>
 
-    <template v-slot:item.longitude="{ item }">
-      {{ item.longitude | formatDecimal }}
-    </template>
+      <template v-slot:item.value="{ item }">
+        {{ item.value | formatDecimal }}
+      </template>
 
-    <template v-slot:item.latitude="{ item }">
-      {{ item.latitude | formatDecimal }}
-    </template>
+      <template v-slot:item.longitude="{ item }">
+        {{ item.longitude | formatDecimal }}
+      </template>
 
-    <template v-slot:item.date="{ item }">
-      <span class="text-no-wrap">{{ item.date | formatDateTime }}</span>
-    </template>
-  </v-data-table>
+      <template v-slot:item.latitude="{ item }">
+        {{ item.latitude | formatDecimal }}
+      </template>
+
+      <template v-slot:item.date="{ item }">
+        <span class="text-no-wrap">{{ item.date | formatDateTime }}</span>
+      </template>
+
+      <template v-slot:footer>
+        <div class="d-flex justify-center">
+          <v-progress-circular
+            v-show="loading"
+            color="primary"
+            size="64"
+            width="8"
+            indeterminate
+          />
+        </div>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script>
@@ -69,10 +92,12 @@ export default {
   },
   data() {
     return {
+      loading: false,
       page: 1,
       scrolledToBottom: false,
       selectedCity: null,
       selectedCountry: null,
+      snackbar: false,
       sortedBy: [],
       sortedDesc: []
     }
@@ -151,9 +176,11 @@ export default {
   },
   methods: {
     getParameter(id) {
-      return this.$store.getters['measurements/getParameter'](id)
+      const res = this.$store.getters['measurements/getParameter'](id)
+      return res || ''
     },
     loadMeasurements() {
+      this.loading = true
       const params = {
         page: this.page,
         country: this.country,
@@ -162,7 +189,15 @@ export default {
         sortedDesc: this.sortedDesc
       }
 
-      this.$store.dispatch('measurements/GET_MEASUREMENTS', params)
+      this.$store
+        .dispatch('measurements/GET_MEASUREMENTS', params)
+        .then(() => {})
+        .catch((err) => {
+          if (err) this.snackbar = true
+        })
+        .finally(() => {
+          this.loading = false
+        })
       this.page++
     },
     reset() {

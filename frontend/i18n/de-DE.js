@@ -4,6 +4,9 @@ export default {
   },
   common: {
     air_pollution: 'Luftverschmutzung',
+    error: {
+      network_error: 'Open AQ Platform API ist aktuell nicht erreichbar!'
+    },
     home: '<Code.Now!>'
   },
   footer: {

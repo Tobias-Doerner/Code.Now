@@ -19,7 +19,7 @@ export default {
         }
       })
       .catch((err) => {
-        console.error(err)
+        return Promise.reject(err)
       })
   },
 
@@ -31,14 +31,14 @@ export default {
    */
   async GET_COUNTRIES({ commit }) {
     await this.$axios
-      .get(`/api.openaq.org/v1/countries?order_by=code&limit=10000`)
+      .get(`/api.openaq.org/v1/countries?order_by=code&limit=1000`)
       .then((res) => {
         if (res.status === 200 && res.data.results.length > 0) {
           commit('SET_COUNTRIES', res.data.results)
         }
       })
       .catch((err) => {
-        console.error(err)
+        return Promise.reject(err)
       })
   },
 
@@ -80,10 +80,10 @@ export default {
             commit('APPEND_MEASUREMENTS', res.data.results)
         })
         .catch((err) => {
-          console.error(err)
+          return Promise.reject(err)
         })
     } else {
-      return new Promise((resolve, reject) => resolve())
+      return Promise.resolve()
     }
   },
 
@@ -101,7 +101,7 @@ export default {
           commit('SET_PARAMETERS', res.data.results)
       })
       .catch((err) => {
-        console.error(err)
+        return Promise.reject(err)
       })
   }
 }
