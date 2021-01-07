@@ -13,7 +13,7 @@ function getDateTimeFormatString(locale) {
 
 export default (ctx) => {
   Vue.filter('formatDateTime', (value) => {
-    if (value === null || value === '' || value === 0) return ''
+    if ([null, undefined, '', 0].includes(value)) return ''
     return ctx
       .$moment(Date.parse(value))
       .utc()
@@ -22,6 +22,7 @@ export default (ctx) => {
 
   Vue.filter('formatDecimal', (value) => {
     if (value === null || value === '') return ''
+    if (!['number', 'string'].includes(typeof value)) return ''
     let locale = 'en-US'
     if (ctx.store.$i18n.locale === 'de') locale = 'de-DE'
     if (ctx.store.$i18n.locale === 'en') locale = 'en-US'
