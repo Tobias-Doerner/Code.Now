@@ -12,6 +12,26 @@ export default {
   formatter: {
     datetime: 'DD.MM.YY HH:mm:ss'
   },
+  measurement: {
+    label: {
+      city: 'Stadt',
+      country: 'Land'
+    },
+    table: {
+      header: {
+        air_pollution: 'Schadstoff',
+        city: 'Stadt',
+        country: 'Land',
+        date: 'Datum',
+        latitude: 'Breitengrad',
+        location: 'Messstation',
+        longitude: 'Längengrad',
+        measurement_unit: 'Messeinheit',
+        measurement_value: 'Feststoffteilchen'
+      },
+      title: 'Schadstoffmessungen'
+    }
+  },
   page: {
     error: {
       link: 'Zurück zum Start',

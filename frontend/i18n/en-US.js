@@ -12,6 +12,26 @@ export default {
   formatter: {
     datetime: 'D/M/YY h:mm:ss a'
   },
+  measurement: {
+    label: {
+      city: 'City',
+      country: 'Country'
+    },
+    table: {
+      header: {
+        air_pollution: 'Air Pollution',
+        city: 'City',
+        country: 'Country',
+        date: 'Date & Time',
+        latitude: 'Latitude',
+        location: 'Measuring Station',
+        longitude: 'Longitude',
+        measurement_unit: 'Measurement Unit',
+        measurement_value: 'Particulate Matter'
+      },
+      title: 'Measurements of pollutants'
+    }
+  },
   page: {
     error: {
       link: 'Back to start',
