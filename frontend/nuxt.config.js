@@ -49,6 +49,15 @@ export default {
     'nuxt-i18n'
   ],
 
+  proxy: {
+    '/api.openaq.org/': {
+      target: 'https://api.openaq.org',
+      pathRewrite: {
+        '^/api.openaq.org': '/'
+      }
+    }
+  },
+
   router: {
     middleware: ['theme']
   },
