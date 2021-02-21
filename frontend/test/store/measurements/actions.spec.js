@@ -1,4 +1,14 @@
 import actions from '@/store/measurements/actions'
+// eslint-disable-next-line no-unused-vars
+import { V2Api, MeasOrder, Sort } from 'openaq-api'
+
+jest.mock('openaq-api', () => {
+  return {
+    MeasOrder: jest.fn(),
+    Sort: jest.fn(),
+    V2Api: jest.fn()
+  }
+})
 
 describe('VUEX actions of the measurements module', () => {
   const commit = jest.fn()
@@ -9,93 +19,109 @@ describe('VUEX actions of the measurements module', () => {
 
   describe('Action GET_CITIES', () => {
     it('should retrieve cities from API and making a commit to the store', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 3269
-              },
-              results: [
-                {
-                  country: 'AD',
-                  name: 'Escaldes-Engordany',
-                  city: 'Escaldes-Engordany',
-                  count: 202609,
-                  locations: 2
+      V2Api.mockImplementation(() => {
+        return {
+          citiesGetV2CitiesGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
                 },
-                {
-                  country: 'AD',
-                  name: 'unused',
-                  city: 'unused',
-                  count: 16301,
-                  locations: 1
-                },
-                {
-                  country: 'AE',
-                  name: 'Abu Dhabi',
-                  city: 'Abu Dhabi',
-                  count: 418940,
-                  locations: 1
-                }
-              ]
-            }
-          })
+                results: [
+                  {
+                    country: 'US',
+                    city: 'ALEXANDER',
+                    count: 41224,
+                    locations: 1,
+                    firstUpdated: '2016-03-28T21:00:00+00:00',
+                    lastUpdated: '2020-11-03T15:00:00+00:00',
+                    parameters: ['o3', 'pm10']
+                  },
+                  {
+                    country: 'IT',
+                    city: 'ALFONSINE',
+                    count: 36472,
+                    locations: 1,
+                    firstUpdated: '2017-11-01T23:00:00+00:00',
+                    lastUpdated: '2020-05-05T23:00:00+00:00',
+                    parameters: ['no2', 'o3', 'pm25']
+                  },
+                  {
+                    country: 'DZ',
+                    city: 'Algiers',
+                    count: 33544143,
+                    locations: 1,
+                    firstUpdated: '2019-06-15T22:00:00+00:00',
+                    lastUpdated: '2021-02-01T11:00:00+00:00',
+                    parameters: ['pm25']
+                  }
+                ]
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_CITIES({ commit })
 
       expect(commit).toHaveBeenCalledWith('SET_CITIES', [
         {
-          country: 'AD',
-          name: 'Escaldes-Engordany',
-          city: 'Escaldes-Engordany',
-          count: 202609,
-          locations: 2
+          country: 'US',
+          city: 'ALEXANDER',
+          count: 41224,
+          locations: 1,
+          firstUpdated: '2016-03-28T21:00:00+00:00',
+          lastUpdated: '2020-11-03T15:00:00+00:00',
+          parameters: ['o3', 'pm10']
         },
         {
-          country: 'AD',
-          name: 'unused',
-          city: 'unused',
-          count: 16301,
-          locations: 1
+          country: 'IT',
+          city: 'ALFONSINE',
+          count: 36472,
+          locations: 1,
+          firstUpdated: '2017-11-01T23:00:00+00:00',
+          lastUpdated: '2020-05-05T23:00:00+00:00',
+          parameters: ['no2', 'o3', 'pm25']
         },
         {
-          country: 'AE',
-          name: 'Abu Dhabi',
-          city: 'Abu Dhabi',
-          count: 418940,
-          locations: 1
+          country: 'DZ',
+          city: 'Algiers',
+          count: 33544143,
+          locations: 1,
+          firstUpdated: '2019-06-15T22:00:00+00:00',
+          lastUpdated: '2021-02-01T11:00:00+00:00',
+          parameters: ['pm25']
         }
       ])
     })
 
     it('should handle response with empty result when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 0
-              },
-              results: []
-            }
-          })
+      V2Api.mockImplementation(() => {
+        return {
+          citiesGetV2CitiesGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
+                },
+                results: []
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_CITIES({ commit })
 
@@ -103,11 +129,13 @@ describe('VUEX actions of the measurements module', () => {
     })
 
     it('should handle network errors when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.reject(new Error('Network Error'))
+      V2Api.mockImplementation(() => {
+        return {
+          citiesGetV2CitiesGet(limit) {
+            return Promise.reject(new Error('Network Error'))
+          }
         }
-      }
+      })
 
       await actions
         .GET_CITIES({ commit })
@@ -119,46 +147,48 @@ describe('VUEX actions of the measurements module', () => {
 
   describe('Action GET_COUNTRIES', () => {
     it('should retrieve countries from API and making a commit to the store', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 110
-              },
-              results: [
-                {
-                  code: 'AD',
-                  count: 218910,
-                  locations: 3,
-                  cities: 2,
-                  name: 'Andorra'
+      V2Api.mockImplementation(() => {
+        return {
+          countriesGetV2CountriesGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 110
                 },
-                {
-                  code: 'AE',
-                  count: 882058,
-                  locations: 4,
-                  cities: 3,
-                  name: 'United Arab Emirates'
-                },
-                {
-                  code: 'AF',
-                  count: 219726,
-                  locations: 2,
-                  cities: 2,
-                  name: 'Afghanistan'
-                }
-              ]
-            }
-          })
+                results: [
+                  {
+                    code: 'AD',
+                    count: 218910,
+                    locations: 3,
+                    cities: 2,
+                    name: 'Andorra'
+                  },
+                  {
+                    code: 'AE',
+                    count: 882058,
+                    locations: 4,
+                    cities: 3,
+                    name: 'United Arab Emirates'
+                  },
+                  {
+                    code: 'AF',
+                    count: 219726,
+                    locations: 2,
+                    cities: 2,
+                    name: 'Afghanistan'
+                  }
+                ]
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_COUNTRIES({ commit })
 
@@ -188,24 +218,26 @@ describe('VUEX actions of the measurements module', () => {
     })
 
     it('should handle response with empty result when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 0
-              },
-              results: []
-            }
-          })
+      V2Api.mockImplementation(() => {
+        return {
+          countriesGetV2CountriesGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
+                },
+                results: []
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_COUNTRIES({ commit })
 
@@ -213,11 +245,13 @@ describe('VUEX actions of the measurements module', () => {
     })
 
     it('should handle network errors when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.reject(new Error('Network Error'))
+      V2Api.mockImplementation(() => {
+        return {
+          countriesGetV2CountriesGet(limit) {
+            return Promise.reject(new Error('Network Error'))
+          }
         }
-      }
+      })
 
       await actions
         .GET_COUNTRIES({ commit })
@@ -229,124 +263,159 @@ describe('VUEX actions of the measurements module', () => {
 
   describe('Action GET_MEASUREMENTS', () => {
     it('should retrieve measurements from API and making a commit to the store', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 868886424
-              },
-              results: [
-                {
-                  location: 'DEBY118',
-                  parameter: 'no2',
-                  date: {
-                    utc: '2018-01-01T00:00:00Z',
-                    local: '2018-01-01T01:00:00+01:00'
-                  },
-                  value: 26.13,
-                  unit: 'µg/m³',
-                  coordinates: {
-                    latitude: 48.573629,
-                    longitude: 13.422039
-                  },
-                  country: 'DE',
-                  city: 'Bayern'
+      V2Api.mockImplementation(() => {
+        return {
+          measurementsGetV2MeasurementsGet() {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
                 },
-                {
-                  location: 'תחנה:ניידת חיפה',
-                  parameter: 'o3',
-                  date: {
-                    utc: '2018-01-01T00:00:00Z',
-                    local: '2018-01-01T02:00:00+02:00'
+                results: [
+                  {
+                    locationId: 73447,
+                    location: 'CO State Univ',
+                    parameter: 'um010',
+                    value: 0.332,
+                    date: {
+                      utc: '2021-02-21T12:26:01+00:00',
+                      local: '2021-02-21T05:26:01-07:00'
+                    },
+                    unit: 'particles/cm³',
+                    coordinates: {
+                      latitude: 40.0347,
+                      longitude: -105.2525
+                    },
+                    country: 'US',
+                    city: null,
+                    isMobile: false,
+                    isAnalysis: false,
+                    entity: 'community',
+                    sensorType: 'low-cost sensor'
                   },
-                  value: 0.0278,
-                  unit: 'ppm',
-                  coordinates: {
-                    latitude: 31.14502,
-                    longitude: 34.82837
+                  {
+                    locationId: 71049,
+                    location: '#2',
+                    parameter: 'pm10',
+                    value: 0,
+                    date: {
+                      utc: '2021-02-21T12:26:01+00:00',
+                      local: '2021-02-21T04:26:01-08:00'
+                    },
+                    unit: 'µg/m³',
+                    coordinates: {
+                      latitude: 47.1902,
+                      longitude: -122.178
+                    },
+                    country: 'US',
+                    city: null,
+                    isMobile: false,
+                    isAnalysis: false,
+                    entity: 'community',
+                    sensorType: 'low-cost sensor'
                   },
-                  country: 'IL',
-                  city: 'צפון הנגב'
-                },
-                {
-                  location: 'DEST090',
-                  parameter: 'so2',
-                  date: {
-                    utc: '2018-01-01T00:00:00Z',
-                    local: '2018-01-01T01:00:00+01:00'
-                  },
-                  value: 21.83,
-                  unit: 'µg/m³',
-                  coordinates: {
-                    latitude: 51.321364,
-                    longitude: 12.032141
-                  },
-                  country: 'DE',
-                  city: 'Sachsen-Anhalt'
-                }
-              ]
-            }
-          })
+                  {
+                    locationId: 71608,
+                    location: '834 N Claremont St',
+                    parameter: 'pm10',
+                    value: 3.9,
+                    date: {
+                      utc: '2021-02-21T12:26:01+00:00',
+                      local: '2021-02-21T04:26:01-08:00'
+                    },
+                    unit: 'µg/m³',
+                    coordinates: {
+                      latitude: 37.5792,
+                      longitude: -122.3342
+                    },
+                    country: 'US',
+                    city: null,
+                    isMobile: false,
+                    isAnalysis: false,
+                    entity: 'community',
+                    sensorType: 'low-cost sensor'
+                  }
+                ]
+              }
+            })
+          }
         }
-      }
+      })
 
-      await actions.GET_MEASUREMENTS({ commit }, { page: 1 })
+      await actions.GET_MEASUREMENTS(
+        { commit },
+        { page: 1, sortedBy: ['date'], sortedDesc: [true] }
+      )
 
       expect(commit).toHaveBeenCalledWith('APPEND_MEASUREMENTS', [
         {
-          location: 'DEBY118',
-          parameter: 'no2',
+          locationId: 73447,
+          location: 'CO State Univ',
+          parameter: 'um010',
+          value: 0.332,
           date: {
-            utc: '2018-01-01T00:00:00Z',
-            local: '2018-01-01T01:00:00+01:00'
+            utc: '2021-02-21T12:26:01+00:00',
+            local: '2021-02-21T05:26:01-07:00'
           },
-          value: 26.13,
-          unit: 'µg/m³',
+          unit: 'particles/cm³',
           coordinates: {
-            latitude: 48.573629,
-            longitude: 13.422039
+            latitude: 40.0347,
+            longitude: -105.2525
           },
-          country: 'DE',
-          city: 'Bayern'
+          country: 'US',
+          city: null,
+          isMobile: false,
+          isAnalysis: false,
+          entity: 'community',
+          sensorType: 'low-cost sensor'
         },
         {
-          location: 'תחנה:ניידת חיפה',
-          parameter: 'o3',
+          locationId: 71049,
+          location: '#2',
+          parameter: 'pm10',
+          value: 0,
           date: {
-            utc: '2018-01-01T00:00:00Z',
-            local: '2018-01-01T02:00:00+02:00'
+            utc: '2021-02-21T12:26:01+00:00',
+            local: '2021-02-21T04:26:01-08:00'
           },
-          value: 0.0278,
-          unit: 'ppm',
-          coordinates: {
-            latitude: 31.14502,
-            longitude: 34.82837
-          },
-          country: 'IL',
-          city: 'צפון הנגב'
-        },
-        {
-          location: 'DEST090',
-          parameter: 'so2',
-          date: {
-            utc: '2018-01-01T00:00:00Z',
-            local: '2018-01-01T01:00:00+01:00'
-          },
-          value: 21.83,
           unit: 'µg/m³',
           coordinates: {
-            latitude: 51.321364,
-            longitude: 12.032141
+            latitude: 47.1902,
+            longitude: -122.178
           },
-          country: 'DE',
-          city: 'Sachsen-Anhalt'
+          country: 'US',
+          city: null,
+          isMobile: false,
+          isAnalysis: false,
+          entity: 'community',
+          sensorType: 'low-cost sensor'
+        },
+        {
+          locationId: 71608,
+          location: '834 N Claremont St',
+          parameter: 'pm10',
+          value: 3.9,
+          date: {
+            utc: '2021-02-21T12:26:01+00:00',
+            local: '2021-02-21T04:26:01-08:00'
+          },
+          unit: 'µg/m³',
+          coordinates: {
+            latitude: 37.5792,
+            longitude: -122.3342
+          },
+          country: 'US',
+          city: null,
+          isMobile: false,
+          isAnalysis: false,
+          entity: 'community',
+          sensorType: 'low-cost sensor'
         }
       ])
     })
@@ -359,61 +428,44 @@ describe('VUEX actions of the measurements module', () => {
       expect(commit).toHaveBeenCalledTimes(0)
     })
 
-    it('should set request params correctly', async () => {
-      actions.$axios = {
-        get: (url) => {
-          expect(url).toBe(
-            '/api.openaq.org/v1/measurements?page=1&country=CH&city=Aargau&order_by[]=country&order_by[]=city&sort[]=desc&sort[]=asc'
-          )
-          return Promise.resolve({ status: 204 })
+    it('should handle response with empty result when calling API', async () => {
+      V2Api.mockImplementation(() => {
+        return {
+          measurementsGetV2MeasurementsGet() {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
+                },
+                results: []
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_MEASUREMENTS(
         { commit },
-        {
-          page: 1,
-          country: 'CH',
-          city: 'Aargau',
-          sortedBy: ['country', 'city'],
-          sortedDesc: [true, false]
-        }
+        { page: 1, sortedBy: ['date'], sortedDesc: [true] }
       )
 
       expect(commit).toHaveBeenCalledTimes(0)
     })
 
-    it('should handle response with empty result when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 0
-              },
-              results: []
-            }
-          })
-        }
-      }
-
-      await actions.GET_MEASUREMENTS({ commit }, { page: 1 })
-
-      expect(commit).toHaveBeenCalledTimes(0)
-    })
-
     it('should handle network errors when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.reject(new Error('Network Error'))
+      V2Api.mockImplementation(() => {
+        return {
+          measurementsGetV2MeasurementsGet() {
+            return Promise.reject(new Error('Network Error'))
+          }
         }
-      }
+      })
 
       await actions
         .GET_MEASUREMENTS({ commit }, { page: 1 })
@@ -425,136 +477,128 @@ describe('VUEX actions of the measurements module', () => {
 
   describe('Action GET_PARAMETERS', () => {
     it('should retrieve parameters from API and making a commit to the store', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/'
-              },
-              results: [
-                {
-                  id: 'bc',
-                  name: 'BC',
-                  description: 'Black Carbon',
-                  preferredUnit: 'µg/m³'
+      V2Api.mockImplementation(() => {
+        return {
+          parametersGetV2ParametersGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/'
                 },
-                {
-                  id: 'co',
-                  name: 'CO',
-                  description: 'Carbon Monoxide',
-                  preferredUnit: 'ppm'
-                },
-                {
-                  id: 'no2',
-                  name: 'NO2',
-                  description: 'Nitrogen Dioxide',
-                  preferredUnit: 'ppm'
-                },
-                {
-                  id: 'o3',
-                  name: 'O3',
-                  description: 'Ozone',
-                  preferredUnit: 'ppm'
-                },
-                {
-                  id: 'pm10',
-                  name: 'PM10',
-                  description:
-                    'Particulate matter less than 10 micrometers in diameter',
-                  preferredUnit: 'µg/m³'
-                },
-                {
-                  id: 'pm25',
-                  name: 'PM2.5',
-                  description:
-                    'Particulate matter less than 2.5 micrometers in diameter',
-                  preferredUnit: 'µg/m³'
-                },
-                {
-                  id: 'so2',
-                  name: 'SO2',
-                  description: 'Sulfur Dioxide',
-                  preferredUnit: 'ppm'
-                }
-              ]
-            }
-          })
+                results: [
+                  {
+                    id: 1,
+                    name: 'pm10',
+                    displayName: 'PM10',
+                    description:
+                      'Particulate matter less than 10 micrometers in diameter mass concentration',
+                    preferredUnit: 'µg/m³',
+                    isCore: true,
+                    maxColorValue: 275.0
+                  },
+                  {
+                    id: 2,
+                    name: 'pm25',
+                    displayName: 'PM2.5',
+                    description:
+                      'Particulate matter less than 2.5 micrometers in diameter mass concentration',
+                    preferredUnit: 'µg/m³',
+                    isCore: true,
+                    maxColorValue: 110.0
+                  },
+                  {
+                    id: 3,
+                    name: 'o3',
+                    displayName: 'O₃ mass',
+                    description: 'Ozone mass concentration',
+                    preferredUnit: 'µg/m³',
+                    isCore: false,
+                    maxColorValue: null
+                  },
+                  {
+                    id: 4,
+                    name: 'co',
+                    displayName: 'CO mass',
+                    description: 'Carbon Monoxide mass concentration',
+                    preferredUnit: 'µg/m³',
+                    isCore: false,
+                    maxColorValue: null
+                  }
+                ]
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_PARAMETERS({ commit })
 
       expect(commit).toHaveBeenCalledWith('SET_PARAMETERS', [
         {
-          id: 'bc',
-          name: 'BC',
-          description: 'Black Carbon',
-          preferredUnit: 'µg/m³'
-        },
-        {
-          id: 'co',
-          name: 'CO',
-          description: 'Carbon Monoxide',
-          preferredUnit: 'ppm'
-        },
-        {
-          id: 'no2',
-          name: 'NO2',
-          description: 'Nitrogen Dioxide',
-          preferredUnit: 'ppm'
-        },
-        {
-          id: 'o3',
-          name: 'O3',
-          description: 'Ozone',
-          preferredUnit: 'ppm'
-        },
-        {
-          id: 'pm10',
-          name: 'PM10',
+          id: 1,
+          name: 'pm10',
+          displayName: 'PM10',
           description:
-            'Particulate matter less than 10 micrometers in diameter',
-          preferredUnit: 'µg/m³'
+            'Particulate matter less than 10 micrometers in diameter mass concentration',
+          preferredUnit: 'µg/m³',
+          isCore: true,
+          maxColorValue: 275.0
         },
         {
-          id: 'pm25',
-          name: 'PM2.5',
+          id: 2,
+          name: 'pm25',
+          displayName: 'PM2.5',
           description:
-            'Particulate matter less than 2.5 micrometers in diameter',
-          preferredUnit: 'µg/m³'
+            'Particulate matter less than 2.5 micrometers in diameter mass concentration',
+          preferredUnit: 'µg/m³',
+          isCore: true,
+          maxColorValue: 110.0
         },
         {
-          id: 'so2',
-          name: 'SO2',
-          description: 'Sulfur Dioxide',
-          preferredUnit: 'ppm'
+          id: 3,
+          name: 'o3',
+          displayName: 'O₃ mass',
+          description: 'Ozone mass concentration',
+          preferredUnit: 'µg/m³',
+          isCore: false,
+          maxColorValue: null
+        },
+        {
+          id: 4,
+          name: 'co',
+          displayName: 'CO mass',
+          description: 'Carbon Monoxide mass concentration',
+          preferredUnit: 'µg/m³',
+          isCore: false,
+          maxColorValue: null
         }
       ])
     })
 
     it('should handle response with empty result when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.resolve({
-            status: 200,
-            data: {
-              meta: {
-                name: 'openaq-api',
-                license: 'CC BY 4.0',
-                website: 'https://docs.openaq.org/',
-                page: 1,
-                limit: 100,
-                found: 0
-              },
-              results: []
-            }
-          })
+      V2Api.mockImplementation(() => {
+        return {
+          parametersGetV2ParametersGet(limit) {
+            return Promise.resolve({
+              status: 200,
+              data: {
+                meta: {
+                  name: 'openaq-api',
+                  license: 'CC BY 4.0',
+                  website: 'https://docs.openaq.org/',
+                  page: 1,
+                  limit: 100,
+                  found: 0
+                },
+                results: []
+              }
+            })
+          }
         }
-      }
+      })
 
       await actions.GET_PARAMETERS({ commit })
 
@@ -562,11 +606,13 @@ describe('VUEX actions of the measurements module', () => {
     })
 
     it('should handle network errors when calling API', async () => {
-      actions.$axios = {
-        get: () => {
-          return Promise.reject(new Error('Network Error'))
+      V2Api.mockImplementation(() => {
+        return {
+          parametersGetV2ParametersGet(limit) {
+            return Promise.reject(new Error('Network Error'))
+          }
         }
-      }
+      })
 
       await actions
         .GET_PARAMETERS({ commit })

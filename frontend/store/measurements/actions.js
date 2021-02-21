@@ -1,3 +1,5 @@
+import { MeasOrder, Sort, V2Api } from 'openaq-api'
+
 /**
  * Actions of the measurements store module.
  */
@@ -9,10 +11,10 @@ export default {
    * @async
    */
   async GET_CITIES({ commit }) {
-    await this.$axios
-      .get(
-        `/api.openaq.org/v1/cities?order_by[]=country&order_by[]=city&limit=10000`
-      )
+    const api = new V2Api()
+
+    await api
+      .citiesGetV2CitiesGet(100000)
       .then((res) => {
         if (res.status === 200 && res.data.results.length > 0) {
           commit('SET_CITIES', res.data.results)
@@ -30,8 +32,10 @@ export default {
    * @async
    */
   async GET_COUNTRIES({ commit }) {
-    await this.$axios
-      .get(`/api.openaq.org/v1/countries?order_by=code&limit=1000`)
+    const api = new V2Api()
+
+    await api
+      .countriesGetV2CountriesGet(10000)
       .then((res) => {
         if (res.status === 200 && res.data.results.length > 0) {
           commit('SET_COUNTRIES', res.data.results)
@@ -57,24 +61,44 @@ export default {
    * @async
    */
   async GET_MEASUREMENTS({ commit }, params) {
+    const api = new V2Api()
+
     if (params.page && params.page > 0) {
-      let query = `?page=${params.page}`
-      if (params.country) query = query + `&country=${params.country}`
-      if (params.city) query = query + `&city=${params.city}`
-      if (params.sortedBy && params.sortedBy.length > 0) {
-        params.sortedBy.forEach((el) => {
-          query = query + `&order_by[]=${el}`
-        })
-      }
-      if (params.sortedDesc && params.sortedDesc.length > 0) {
-        params.sortedDesc.forEach((el) => {
-          const order = el ? 'desc' : 'asc'
-          query = query + `&sort[]=${order}`
-        })
+      let sortedBy
+      if (params.sortedBy.length > 0) {
+        if (params.sortedBy[0] === 'date') {
+          sortedBy = MeasOrder.Datetime
+        }
+        if (params.sortedBy[0] === 'city') {
+          sortedBy = MeasOrder.City
+        }
+        if (params.sortedBy[0] === 'country') {
+          sortedBy = MeasOrder.Country
+        }
       }
 
-      await this.$axios
-        .get(`/api.openaq.org/v1/measurements` + query)
+      await api
+        .measurementsGetV2MeasurementsGet(
+          undefined,
+          undefined,
+          undefined,
+          100,
+          params.page ? params.page : undefined,
+          undefined,
+          params.sortedDesc[0] ? Sort.Desc : Sort.Asc,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          params.country ? params.country : undefined,
+          undefined,
+          params.city ? [params.city] : undefined,
+          undefined,
+          undefined,
+          sortedBy
+        )
         .then((res) => {
           if (res.status === 200 && res.data.results.length > 0)
             commit('APPEND_MEASUREMENTS', res.data.results)
@@ -94,8 +118,10 @@ export default {
    * @async
    */
   async GET_PARAMETERS({ commit }) {
-    await this.$axios
-      .get(`/api.openaq.org/v1/parameters`)
+    const api = new V2Api()
+
+    await api
+      .parametersGetV2ParametersGet(100000)
       .then((res) => {
         if (res.status === 200 && res.data.results.length > 0)
           commit('SET_PARAMETERS', res.data.results)

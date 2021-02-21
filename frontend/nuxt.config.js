@@ -44,19 +44,9 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/moment',
-    '@nuxtjs/proxy',
     '@nuxtjs/universal-storage',
     ['nuxt-i18n', { seo: true }]
   ],
-
-  proxy: {
-    '/api.openaq.org/': {
-      target: 'https://api.openaq.org',
-      pathRewrite: {
-        '^/api.openaq.org': '/'
-      }
-    }
-  },
 
   router: {
     middleware: ['theme']

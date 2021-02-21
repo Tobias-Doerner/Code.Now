@@ -15,7 +15,7 @@ export default {
       .map((el) => {
         return {
           city: el.city,
-          name: el.name
+          name: el.city
         }
       })
 
@@ -58,7 +58,7 @@ export default {
    * @returns {object} Parameter object.
    */
   getParameter: (state) => (id) => {
-    const parameters = state.parameters.filter((el) => el.id === id)
+    const parameters = state.parameters.filter((el) => el.name === id)
     if (Array.isArray(parameters) && parameters.length > 0) {
       return parameters[0]
     } else {

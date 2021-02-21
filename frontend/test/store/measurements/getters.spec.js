@@ -212,57 +212,35 @@ describe('VUEX getters of the measurements module', () => {
       const state = {
         parameters: [
           {
-            id: 'bc',
-            name: 'BC',
-            description: 'Black Carbon',
-            preferredUnit: 'µg/m³'
-          },
-          {
-            id: 'co',
-            name: 'CO',
-            description: 'Carbon Monoxide',
-            preferredUnit: 'ppm'
-          },
-          {
-            id: 'no2',
-            name: 'NO2',
-            description: 'Nitrogen Dioxide',
-            preferredUnit: 'ppm'
-          },
-          {
-            id: 'o3',
-            name: 'O3',
-            description: 'Ozone',
-            preferredUnit: 'ppm'
-          },
-          {
-            id: 'pm10',
-            name: 'PM10',
             description:
-              'Particulate matter less than 10 micrometers in diameter',
-            preferredUnit: 'µg/m³'
+              'Particulate matter less than 10 micrometers in diameter mass concentration',
+            displayName: 'PM10',
+            id: 1,
+            isCore: true,
+            maxColorValue: 275,
+            name: 'pm10',
+            preferredUnit: 'µg/m3'
           },
           {
-            id: 'pm25',
-            name: 'PM2.5',
-            description:
-              'Particulate matter less than 2.5 micrometers in diameter',
-            preferredUnit: 'µg/m³'
-          },
-          {
-            id: 'so2',
-            name: 'SO2',
-            description: 'Sulfur Dioxide',
-            preferredUnit: 'ppm'
+            description: 'Nitrogen Dioxide mass concentration',
+            displayName: 'NO₂ mass',
+            id: 5,
+            isCore: false,
+            maxColorValue: null,
+            name: 'no2',
+            preferredUnit: 'µg/m3'
           }
         ]
       }
 
       expect(getters.getParameter(state)('no2')).toEqual({
-        id: 'no2',
-        name: 'NO2',
-        description: 'Nitrogen Dioxide',
-        preferredUnit: 'ppm'
+        description: 'Nitrogen Dioxide mass concentration',
+        displayName: 'NO₂ mass',
+        id: 5,
+        isCore: false,
+        maxColorValue: null,
+        name: 'no2',
+        preferredUnit: 'µg/m3'
       })
 
       expect(getters.getParameter(state)('notdefined')).toBeNull()

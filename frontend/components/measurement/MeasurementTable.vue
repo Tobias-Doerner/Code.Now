@@ -12,11 +12,12 @@
     <v-data-table
       :headers="headers"
       :items="items"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="sortDesc"
       class="tertiary"
       dense
       disable-pagination
       hide-default-footer
-      multi-sort
       @update:options="setSorting"
     >
       <template v-slot:top>
@@ -40,7 +41,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <strong>{{ getParameter(item.parameter).name }}</strong>
+              <strong>{{ getParameter(item.parameter).displayName }}</strong>
             </v-chip>
           </template>
           <span>{{ getParameter(item.parameter).description }}</span>
@@ -98,6 +99,8 @@ export default {
       selectedCity: null,
       selectedCountry: null,
       snackbar: false,
+      sortBy: 'date',
+      sortDesc: true,
       sortedBy: [],
       sortedDesc: []
     }
@@ -107,6 +110,7 @@ export default {
       return [
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.location'),
           value: 'location'
         },
@@ -122,26 +126,31 @@ export default {
         },
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.air_pollution'),
           value: 'parameter'
         },
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.measurement_unit'),
           value: 'unit'
         },
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.measurement_value'),
           value: 'value'
         },
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.longitude'),
           value: 'longitude'
         },
         {
           class: 'text-no-wrap',
+          sortable: false,
           text: this.$t('measurement.table.header.latitude'),
           value: 'latitude'
         },
