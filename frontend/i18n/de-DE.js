@@ -20,6 +20,9 @@ export default {
       city: 'Stadt',
       country: 'Land'
     },
+    loader: {
+      btn: 'mehr ...'
+    },
     table: {
       header: {
         air_pollution: 'Schadstoff',

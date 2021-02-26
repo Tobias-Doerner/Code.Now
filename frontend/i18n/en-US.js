@@ -20,6 +20,9 @@ export default {
       city: 'City',
       country: 'Country'
     },
+    loader: {
+      btn: 'more ...'
+    },
     table: {
       header: {
         air_pollution: 'Air Pollution',

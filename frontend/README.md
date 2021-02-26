@@ -2,6 +2,8 @@
 
 > Frontend for the Accenture Code.Now Challenge developed with Vue.js & Nuxt.js Framework.
 
+You can visit the running demo app [here](https://accenture-codenow-airpoll.netlify.app/)
+
 ## Build Setup
 
 ```bash

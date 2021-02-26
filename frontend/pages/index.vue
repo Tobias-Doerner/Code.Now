@@ -1,8 +1,8 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-card color="tertiary" class="mx-auto">
-        <v-img max-width="700px" src="/banner.png" />
+      <v-card color="tertiary" class="mx-auto" max-width="700" min-width="200">
+        <v-img max-width="700" src="/banner.webp" />
         <v-card-text class="body-1">
           {{ $t('page.index.card.text') }}
         </v-card-text>

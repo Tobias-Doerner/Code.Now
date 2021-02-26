@@ -66,13 +66,14 @@
 
       <template v-slot:footer>
         <div class="d-flex justify-center">
-          <v-progress-circular
-            v-show="loading"
-            color="primary"
-            size="64"
-            width="8"
-            indeterminate
-          />
+          <v-btn
+            :loading="loading"
+            class="text-none ma-4"
+            large
+            @click="loadMeasurements"
+          >
+            {{ $t('measurement.loader.btn') }}
+          </v-btn>
         </div>
       </template>
     </v-data-table>
@@ -95,7 +96,6 @@ export default {
     return {
       loading: false,
       page: 1,
-      scrolledToBottom: false,
       selectedCity: null,
       selectedCountry: null,
       snackbar: false,
@@ -173,11 +173,6 @@ export default {
     country(val) {
       this.reset()
       this.loadMeasurements()
-    },
-    scrolledToBottom(val) {
-      if (val === true) {
-        this.loadMeasurements()
-      }
     }
   },
   mounted() {
@@ -216,19 +211,10 @@ export default {
     scroll() {
       window.onscroll = () => {
         const bottomOfWindow =
-          Math.max(
-            window.pageYOffset,
-            document.documentElement.scrollTop,
-            document.body.scrollTop
-          ) +
-            window.innerHeight ===
+          document.documentElement.scrollTop + window.innerHeight ===
           document.documentElement.offsetHeight
 
-        if (bottomOfWindow) {
-          this.scrolledToBottom = true
-        } else {
-          this.scrolledToBottom = false
-        }
+        if (bottomOfWindow) this.loadMeasurements()
       }
     },
     setSorting(event) {
