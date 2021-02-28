@@ -1,1 +1,10 @@
-* -crlf
+*         text=auto
+
+# binary files
+*.gif     binary
+*.ico     binary
+*.jpeg    binary
+*.jpg     binary
+*.png     binary
+*.webp    binary
+*.woff2   binary
